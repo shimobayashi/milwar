@@ -16,7 +16,9 @@ else # 在宅中
     cmd = "\\x42\\x00\\x55" # 点灯
 
     t = Time.now
-    if (t.hour >= 21 || t.hour < 5)
+    if settings['time_to_sleep'] != '0' # 寝る時間
+      cmd2 = "\\x40\\xa0\\x55" # 赤色
+    elsif (t.hour >= 21 || t.hour < 5) # 21時～5時
       cmd2 = "\\x40\\x90\\x55" # 暖色
     else
       cmd2 = "\\xC2\\x00\\x55" # 白色
@@ -51,6 +53,11 @@ json = [
     name: 'myself.home',
     time: epoch,
     value: settings['home'].to_i,
+  },
+  {
+    name: 'myself.time_to_sleep',
+    time: epoch,
+    value: settings['time_to_sleep'].to_i,
   },
 ].to_json
 `curl https://mackerel.io/api/v0/services/My-Room/tsdb -H 'X-Api-Key: #{api_key}' -H 'Content-Type: application/json' -X POST -d '#{json}'`
